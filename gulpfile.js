@@ -9,10 +9,11 @@ var sh = require('shelljs');
 var elm = require('gulp-elm');
 
 var paths = {
-  sass: ['./scss/**/*.scss']
+  sass: ['./scss/**/*.scss'],
+  elm: ['./elm/**/*.elm']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['sass', 'elm']);
 
 gulp.task('elm-init', elm.init);
 
@@ -43,6 +44,7 @@ gulp.task('sass', function(done) {
 
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
+  gulp.watch(paths.elm, ['elm']);
 });
 
 gulp.task('install', ['git-check'], function() {
