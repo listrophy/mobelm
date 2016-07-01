@@ -7,6 +7,8 @@ var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
 var elm = require('gulp-elm');
+var plumber = require('gulp-plumber');
+var notify = require('gulp-notify');
 
 var paths = {
   sass: ['./scss/**/*.scss'],
@@ -18,13 +20,23 @@ gulp.task('default', ['sass', 'elm']);
 gulp.task('elm-init', elm.init);
 
 gulp.task('elm', ['elm-init'], function() {
-  return gulp.src('www/elm/**/*.elm')
+  return gulp.src('elm/**/*.elm')
+    .pipe(plumber())
     .pipe(elm())
     .pipe(gulp.dest('www/js/'));
 });
 
+var notifier = function() {
+  console.log("before");
+  notify({title: 'elm', message: 'elm!'});
+  console.log("after");
+};
+
 gulp.task('elm-bundle', ['elm-init'], function() {
-  return gulp.src('www/elm/**/*.elm')
+  return gulp.src('elm/**/*.elm')
+    .pipe(plumber({
+      errorHandler: notifier
+    }))
     .pipe(elm.bundle('bundle.js'))
     .pipe(gulp.dest('www/js/'));
 });
@@ -44,7 +56,7 @@ gulp.task('sass', function(done) {
 
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
-  gulp.watch(paths.elm, ['elm']);
+  gulp.watch(paths.elm, ['elm-bundle']);
 });
 
 gulp.task('install', ['git-check'], function() {
